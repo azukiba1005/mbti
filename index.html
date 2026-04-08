@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>彼氏ができない原因診断</title>
+
+<style>
+body{
+  margin:0;
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#ffe6f0,#e6f0ff);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.screen{
+  display:none;
+  text-align:center;
+  max-width:500px;
+  width:90%;
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  animation:fade 0.4s;
+}
+
+.active{display:block;}
+
+h1{color:#ff4d88;}
+
+.option{
+  margin:10px 0;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.2s;
+  text-align:left;
+}
+
+.option:hover{
+  background:#ffe6f0;
+  transform:scale(1.02);
+}
+
+button{
+  margin-top:20px;
+  padding:12px;
+  width:100%;
+  background:#ff4d88;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+}
+
+.bar{
+  height:10px;
+  background:#eee;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  background:#ff4d88;
+  width:0;
+  transition:1s;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="start" class="screen active">
+<h1>彼氏ができない原因診断</h1>
+<p>全15問であなたの恋愛タイプを診断</p>
+<button onclick="start()">スタート</button>
+</div>
+
+<div id="quiz" class="screen"></div>
+<div id="result" class="screen"></div>
+
+<script>
+
+let questions=[
+
+// 積極性
+{
+q:"気になる人ができたときどうする？",
+options:[
+["A：自分から話しかける・アピールする",5],
+["B：様子を見るけどタイミングがあれば話す",3],
+["C：話したいけど何もできない",-3],
+["D：何も行動せずただ待つ",-5]
+]},
+
+{
+q:"普段の異性とのかかわり方は？",
+options:[
+["A：自分から話しかけることが多い",5],
+["B：話しかけられたら話す",3],
+["C：あまり関わらない",-3],
+["D：家族としか話さないレベル",-5]
+]},
+
+{
+q:"相手との予定を決めるときは？",
+options:[
+["A：自分から日程や内容を提案する",5],
+["B：お互いに案を出し合って決めたい",3],
+["C：相手がしたいことをしたい",-3],
+["D：相手に全部決めてもらいたい",-5]
+]},
+
+{
+q:"好きな人と話すチャンスがあったら？",
+options:[
+["A：絶対逃さず自分から話す",5],
+["B：勇気を出して話しかけてみる",3],
+["C：話せるのに見送ることが多い",-3],
+["D：絶対無理。話しかけれない",-5]
+]},
+
+{
+q:"好きな人の情報を知りたいときは？",
+options:[
+["A：自直接聞いたり行動で知ろうとする",5],
+["B：友達の手も借りながら、自分から知ろうとする",3],
+["C：知りたい情報は友達を通して知る",-3],
+["D：知りたいなーで終わってしまう事が多い",-5]
+]},
+
+// 自己肯定感
+{
+q:"自分は恋愛対象としてどう思う？",
+options:[
+["A：魅力的だと思う",5],
+["B：普通かな",3],
+["C：自身がないなあ",-3],
+["D：絶対無理",-5]
+]},
+
+{
+q:"自分に満足してる？",
+options:[
+["A：満足してる",5],
+["B：普通かな",3],
+["C：できてない",-3],
+["D：：死んで来世に期待するレベル",-5]
+]},
+
+{
+q:"他の人と比べたときの気持ちは？",
+options:[
+["A：自分の方がいいなって思えることがほとんど",5],
+["B：まあ自分の方がいいって思うことが多いかな",3],
+["C：自分は劣っていると感じる",-3],
+["D：毎日比べすぎてしんどくなってくる",-5]
+]},
+
+{
+q:"相手が自分に優しくしてくれた時、どう感じる？？",
+options:[
+["A：「相手も私の事好きなんじゃない！」ポジティブに考える",5],
+["B：「もしかして脈あり？」期待でどきどき",3],
+["C：「誰にでも優しいだけ...」と受け流す",-3],
+["D：「絶対違うんだよな...」とネガティブ思考",-5]
+]},
+
+{
+q:"誰かに褒められたときは？",
+options:[
+["A：当たり前だろ！！",5],
+["B：素直に受け取る",3],
+["C：お世辞かもと思ってしまう",-3],
+["D：この人は嘘をついていると思ってしまう自分に嫌気がさす",-5]
+]},
+
+// 環境
+{
+q:"学校生活の中で、異性のクラスメイトと話す機会がある？",
+options:[
+["A：気軽に話せる関係",5],
+["B：１日１回くらいは話す",3],
+["C：用事があるときぐらいしか話さない",-3],
+["D：全く話さないor周りに異性がいない",-5]
+]},
+
+{
+q:"新しく異性と知り合う機会がある？（学校・部活・遊びなど）",
+options:[
+["A：自分から新しい機会に行く",5],
+["B：きっかけがあれば",3],
+["C：ほとんどない",-3],
+["D：まじでなんもない",-5]
+]},
+
+{
+q:"勉強や部活の忙しさをパーセントで表すと？",
+options:[
+["A：90%",5],
+["B：60%",3],
+["C：40%",-3],
+["D：10%",-5]
+]},
+
+{
+q:"あなたの学校はどっち？",
+options:[
+["A：共学",5],
+["B：女子校",-5]
+]},
+
+{
+q:"あなたが普段過ごしているコミュニティーに男子はいる？",
+options:[
+["A：いる！",5],
+["B：いない！",-5]
+]}
+
+];
+
+let answers=[];
+let index=0;
+
+function start(){
+document.getElementById("start").classList.remove("active");
+show();
+}
+
+function show(){
+let q=questions[index];
+let box=document.getElementById("quiz");
+
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+box.classList.add("active");
+
+let html=<h2>${index+1}/15</h2><p>${q.q}</p>;
+
+q.options.forEach(o=>{
+html+=<div class="option" onclick="answer(${o[1]})">${o[0]}</div>;
+});
+
+box.innerHTML=html;
+}
+
+function answer(v){
+answers.push(v);
+index++;
+if(index<questions.length) show();
+else result();
+}
+
+function result(){
+
+let a=answers.slice(0,5).reduce((x,y)=>x+y);
+let c=answers.slice(5,10).reduce((x,y)=>x+y);
+let e=answers.slice(10,15).reduce((x,y)=>x+y);
+
+let type=(a>=0?"A":"P")+(c>=0?"C":"I")+(e>=0?"R":"L");
+
+let pa=Math.round((a+25)/50*100);
+let pc=Math.round((c+25)/50*100);
+let pe=Math.round((e+25)/50*100);
+
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+let r=document.getElementById("result");
+r.classList.add("active");
+
+r.innerHTML=`
+<h2>${type}</h2>
+
+<p>積極性</p>
+<div class="bar"><div class="fill" id="a"></div></div>
+
+<p>自己肯定感</p>
+<div class="bar"><div class="fill" id="c"></div></div>
+
+<p>環境</p>
+<div class="bar"><div class="fill" id="e"></div></div>
+
+<hr>
+
+<p>
+A＝積極型 / P＝消極型<br>
+C＝自信あり / I＝自信なし<br>
+R＝環境十分 / L＝環境不足
+</p>
+
+<button onclick="location.reload()">もう一度</button>
+`;
+
+setTimeout(()=>{
+document.getElementById("a").style.width=pa+"%";
+document.getElementById("c").style.width=pc+"%";
+document.getElementById("e").style.width=pe+"%";
+},100);
+
+}
+
+</script>
+
+</body>
+</html>
