@@ -244,10 +244,10 @@ let box=document.getElementById("quiz");
 document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
 box.classList.add("active");
 
-let html=<h2>${index+1}/15</h2><p>${q.q}</p>;
+let html=`<h2>${index+1}/15</h2><p>${q.q}</p>`;
 
 q.options.forEach(o=>{
-html+=<div class="option" onclick="answer(${o[1]})">${o[0]}</div>;
+html+=`<div class="option" onclick="answer(${o[1]})">${o[0]}</div>`;
 });
 
 box.innerHTML=html;
