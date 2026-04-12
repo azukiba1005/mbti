@@ -5,6 +5,142 @@
 <title>彼氏ができない原因診断</title>
 
 <style>
+
+.percentInBar{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+font-size:12px;
+font-weight:bold;
+color:#fff;
+pointer-events:none;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 20px; /* ←少し増やす */
+box-sizing:border-box; /* ←超重要 */
+}
+
+.startBtn{
+background:linear-gradient(90deg,#ff9ad5,#9ad7ff);
+color:#fff;
+font-size:18px;
+font-weight:bold;
+box-shadow:0 5px 20px rgba(0,0,0,0.15);
+}
+
+.nameInput{
+padding:15px;
+width:80%;
+border-radius:20px;
+border:none;
+font-size:18px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+outline:none;
+}
+
+.title{
+  font-size:28px;
+  background:linear-gradient(90deg,#ff6b9a,#6bbcff);
+  background-clip:text;              /* ←追加 */
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent; /* ←これが超重要 */
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.subtitle{
+font-size:14px;
+color:#888;
+margin-bottom:20px;
+}
+
+.barBox{
+margin:30px 0;
+animation:fadeUp 0.8s ease forwards;
+opacity:0;
+}
+
+.barBox:nth-child(1){animation-delay:0.2s;}
+.barBox:nth-child(2){animation-delay:0.4s;}
+.barBox:nth-child(3){animation-delay:0.6s;}
+
+@keyframes fadeUp{
+to{opacity:1;transform:translateY(0);}
+from{opacity:0;transform:translateY(20px);}
+}
+
+.barLabel{
+display:flex;
+justify-content:space-between;
+font-weight:bold;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.bar2{
+position:relative;
+height:28px;
+background:#eee;
+border-radius:20px;
+overflow:hidden; /* ←ここ変更 */
+backdrop-filter: blur(10px);
+}
+
+/* 左右の色 */
+/* 150行目付近にある .colorFill をこれに書き換え */
+
+.colorFill.left {
+  left: 0;
+  transform-origin: left; /* 左から右へ伸びる */
+}
+
+.colorFill.right {
+  right: 0;
+  transform-origin: right; /* 右から左へ伸びる（または固定） */
+}
+
+/* 真ん中線 */
+.centerLine{
+background: linear-gradient(#fff,#fff) padding-box,
+linear-gradient(135deg,#ff9ad5,#9ad7ff) border-box;
+border:3px solid transparent;
+
+position:absolute;
+left:50%;
+top:0;
+width:2px;
+height:100%;
+background:#fff;
+opacity:0.7;
+}
+
+/* 168行目付近の .indicator を書き換え */
+.indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px; /* 少し大きくすると見栄えが良いです */
+  height: 22px;
+  background: #fff;
+  border: 4px solid #ccc; /* 初期値は何でもOK（JSで上書きします） */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: 1s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 10; /* バーより上に確実に表示 */
+}
+
+/* 数字 */
+.percentText{
+text-align:center;
+font-size:13px;
+margin-top:6px;
+}
+
+
 #box{
     white-space: pre-line;
 }
@@ -25,11 +161,13 @@ border-radius:25px;
 width:90%;
 max-width:600px;
 text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
+box-shadow:0 10px 30px rgba(171, 171, 171, 0.292);
 animation:fade 0.5s;
 
 max-height:90vh;
 overflow-y:auto;
+transform: scale(1);
+animation: popIn 0.6s ease;
 }
 
 
@@ -49,9 +187,9 @@ cursor:pointer;
 transition:0.3s;
 }
 
-button:hover{
-transform:scale(1.05);
-background:#e6f0ff;
+button:active {
+  transform: scale(0.95);
+  background: #ffd6ec;
 }
 
 .hidden{display:none;}
@@ -79,16 +217,176 @@ font-size:13px;
 img{
 width:200px;
 margin:20px 0;
-border-radius:15px;
+border-radius:20px;
+box-shadow:0 10px 20px rgba(0,0,0,0.15);
+transition:0.5s;
+}
+img:hover{
+transform:scale(1.05);
 }
 
 .section{
 text-align:left;
 margin-top:15px;
+padding:15px;
+border-radius:15px;
+background:#fff;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
 }
 .section p{
 white-space: pre-line;
 line-height:1.7;
+}
+
+.axis span{
+font-weight:bold;
+}
+
+#graph div{
+margin-bottom:10px;
+font-size:14px;
+}
+
+#typeName{
+font-size:40px;
+font-weight:bold;
+background:linear-gradient(90deg,#ff6b9a,#6bbcff);
+
+background-clip:text;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+color:transparent;
+
+display:inline-block;
+
+margin-bottom:10px;
+}
+
+#typeName{
+animation:pop 0.6s ease;
+}
+
+@keyframes pop{
+0%{transform:scale(0.7);opacity:0;}
+100%{transform:scale(1);opacity:1;}
+}
+
+@keyframes popIn{
+0%{transform:scale(0.9);opacity:0;}
+100%{transform:scale(1);opacity:1;}
+}
+
+#resultTitle{
+font-size:20px;
+color:#555;
+margin-bottom:5px;
+}
+
+.section b{
+display:inline-block;
+font-size:16px;
+margin-bottom:8px;
+padding:5px 12px;
+border-radius:999px;
+background:linear-gradient(90deg,#ff9ad5,#9ad7ff);
+color:#fff;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeUpBig{
+from{
+opacity:0;
+transform:translateY(30px) scale(0.95);
+}
+to{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+}
+
+.section{
+animation:fadeUpBig 0.6s ease forwards;
+opacity:0;
+}
+.section:nth-of-type(1){animation-delay:0.2s;}
+.section:nth-of-type(2){animation-delay:0.4s;}
+.section:nth-of-type(3){animation-delay:0.6s;}
+.section:nth-of-type(4){animation-delay:0.8s;}
+
+/* --- 左右の色のバー --- */
+.colorFill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: 1s cubic-bezier(.34,1.56,.64,1); /* これがアニメーションの肝 */
+}
+
+.colorFill.left {
+  left: 0;
+}
+
+.colorFill.right {
+  right: 0;
+}
+
+/* --- 動く丸 --- */
+.indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%; /* 初期位置：真ん中 */
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border: 4px solid #ccc;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: 1s cubic-bezier(.34,1.56,.64,1); /* バーと同じ時間で動かす */
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+/* ⚠️ 注意：CSSの一番最後に transform: scaleX(0) などの .colorFill 設定が残っていたら、必ず削除してください */
+
+/* --- スタート画面の入力欄とボタンを今風に --- */
+.nameInput {
+  padding: 15px;
+  width: 80%;
+  border-radius: 15px;
+  border: 2px solid #eee; /* 枠線を少しつける */
+  font-size: 18px;
+  outline: none;
+  transition: 0.3s;
+  text-align: center;
+}
+
+/* 名前がない時に震える演出 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.error-shake {
+  animation: shake 0.3s;
+  border-color: #ff6b6b;
+  background: #fff0f0;
+}
+
+/* ボタンをぷっくりさせる */
+.startBtn, #result button {
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  transform: translateY(0);
+}
+
+.startBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* 結果のタイトルを強調 */
+#typeName {
+  font-size: 50px; /* 大きく */
+  letter-spacing: -2px;
+  margin: 10px 0;
 }
 
 </style>
@@ -99,12 +397,10 @@ line-height:1.7;
 
 <!-- スタート -->
 <div id="start">
-<h1>彼氏ができない原因診断</h1>
-<input id="name" placeholder="名前を入力"
-style="padding:15px;width:80%;border-radius:15px;border:1px solid #ddd;font-size:18px;">
-<br><br>
-<button onclick="startTest()">スタート</button>
-</div>
+<h1 class="title">彼氏ができない原因診断</h1>
+<p class="subtitle">あなたの恋愛タイプを診断💖</p>
+<input id="name" placeholder="名前を入力" class="nameInput"><br><br>
+<button class="startBtn" onclick="startTest()">start</button></div>
 
 <!-- 質問 -->
 <div id="quiz" class="hidden">
@@ -137,6 +433,10 @@ style="padding:15px;width:80%;border-radius:15px;border:1px solid #ddd;font-size
 let name="",index=0;
 let A=0,C=0,R=0;
 
+const MAX_A = 0;
+const MAX_C = 0;
+const MAX_R = 0;
+
 const questions=[
 // ---省略なし完全15問---
 {q:"気になる人ができたときどうする？",axis:"A",a:[["A：自分から話しかける・アピールする",5],["B：様子を見るけどタイミングがあれば話す",3],["C：話したいけど何もできない",-3],["D：何も行動せずただ相手が来るのを待つ",-5]]},
@@ -153,18 +453,45 @@ const questions=[
 
 {q:"学校生活の中で、異性のクラスメイトと話す機会がある？",axis:"R",a:[["A：気軽に話せる関係",5],["B：１日１回くらいは話す",3],["C：用事があるときぐらいしか話さない",-3],["D：全く話さないor周りに異性がいない",-5]]},
 {q:"新しく異性と知り合う機会がある？（学校・部活・遊びなど）",axis:"R",a:[["A：自分から新しい機会に行く",5],["B：きっかけがあれば ",3],["C：ほとんどない",-3],["D：まじでなんもない",-5]]},
-{q:"勉強や部活の忙しさをパーセントで表すと？",axis:"R",a:[["A：９０%",5],["B：６０%",3],["C：４０%",-3],["D：１０% ",-5]]},
+{q:"勉強や部活の忙しさをパーセントで表すと？",axis:"R",a:[["A：９０%",-5],["B：６０%",-3],["C：４０%",3],["D：１０% ",5]]},
 
 // ⭐修正済み2択
 {q:"あなたの学校はどっち？",axis:"R",a:[["A：共学",5],["B：女子校",-5]]},
 {q:"あなたが普段過ごしているコミュニティーに男子はいる？",axis:"R",a:[["A：いる！",5],["B：いない！",-5]]}
 ];
 
-function startTest(){
-name=document.getElementById("name").value||"あなた";
-document.getElementById("start").classList.add("hidden");
-document.getElementById("quiz").classList.remove("hidden");
-showQ();
+
+let totalA_max = 0;
+let totalC_max = 0;
+let totalR_max = 0;
+
+questions.forEach(q => {
+  let max = Math.max(...q.a.map(c => c[1]));
+
+  if (q.axis === "A") totalA_max += max;
+  if (q.axis === "C") totalC_max += max;
+  if (q.axis === "R") totalR_max += max;
+});
+
+function startTest() {
+  const input = document.getElementById("name"); // 入力欄を取得
+  name = input.value.trim(); // 名前を取得して前後の空白を消す
+
+  // もし名前が空っぽ（何も入力されていない）なら
+  if (name === "") {
+    input.classList.add("error-shake"); // 震えるアニメーションを追加
+    
+    // 0.3秒後に震えクラスを消す（次また震えさせるため）
+    setTimeout(() => input.classList.remove("error-shake"), 300);
+    
+    input.placeholder = "名前を入力してください！"; // ヒントを表示
+    return; // ここで処理を中断して、診断を始めない
+  }
+
+  // 名前が入っていれば、ここから先が実行される
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  showQ();
 }
 
 function showQ(){
@@ -192,7 +519,14 @@ function showResult(){
 document.getElementById("quiz").classList.add("hidden");
 document.getElementById("result").classList.remove("hidden");
 
-let type=(A>=0?"A":"P")+(C>=0?"C":"I")+(R>=0?"R":"L");
+function judge(x,pos,neg){
+  return x >= 0 ? pos : neg;
+}
+
+let type =
+judge(A,"A","P") +
+judge(C,"C","I") +
+judge(R,"R","L");
 
 document.getElementById("resultTitle").innerText=name+"さんの結果は…";
 document.getElementById("typeName").innerText=type;
@@ -268,34 +602,90 @@ document.getElementById("good").textContent=t.good;
 document.getElementById("bad").textContent=t.bad;
 document.getElementById("advice").textContent=t.advice;
 // グラフ
-function p(x){return Math.min(100,Math.max(0,50+x));}
 
-document.getElementById("graph").innerHTML=`
-<div class="axis">A ← → P</div>
-<div class="bar"><div class="fill" style="width:${p(A)}%"></div></div>
 
-<div class="axis">C ← → I</div>
-<div class="bar"><div class="fill" style="width:${p(C)}%"></div></div>
+function percentText(x){
+  let left = Math.max(0,50-x);
+  let right = Math.max(0,50+x);
+  return `${left}% : ${right}%`;
+}
 
-<div class="axis">R ← → L</div>
-<div class="bar"><div class="fill" style="width:${p(R)}%"></div></div>
-`;
+function toPercent(score, max) {
+  // スコアの範囲は -max から +max なので、全体幅は max * 2
+  // (-max を 0にするために maxを足す)
+  return ((score + max) / (max * 2)) * 100;
+}
+
+// --- グラフ表示用関数 ---
+function createBar(labelL, labelR, value, colorL, colorR, pointColor) {
+  // 最初は「50%」の状態でHTMLを作成する
+  return `
+  <div class="barBox">
+    <div class="barLabel">
+      <span style="color:${colorL}">${labelL}</span>
+      <span style="color:${colorR}">${labelR}</span>
+    </div>
+    <div class="bar2">
+      <div class="colorFill left" style="background:${colorL}; width:50%"></div>
+      <div class="colorFill right" style="background:${colorR}; width:50%"></div>
+      <div class="indicator" style="border-color:${pointColor}; left:50%"></div>
+      <div class="percentInBar">
+        <span class="p-left">50%</span>
+        <span class="p-right">50%</span>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+// --- showResult関数内の末尾、グラフ処理部分 ---
+
+const graphArea = document.getElementById("graph"); // ここを追加！
+
+// 1. パーセントを整数で計算
+let A_per = Math.round(toPercent(A, totalA_max));
+let C_per = Math.round(toPercent(C, totalC_max));
+let R_per = Math.round(toPercent(R, totalR_max));
+
+// 2. グラフエリアを「50%」の状態で作成（初期状態）
+graphArea.innerHTML =
+  createBar("ACTIVE", "PASSIVE", "#ff6b9a", "#6bbcff", "#ff6b9a") +
+  createBar("CONFIDENCE", "INSECURE", "#ffb86b", "#9b6bff", "#9b6bff") +
+  createBar("READY", "LIMITED", "#4cd97b", "#ff6b6b", "#4cd97b");
+
+ // アニメーション実行
+setTimeout(() => {
+  const values = [A_per, C_per, R_per];
+  const colors = [
+    { L: "#ff6b9a", R: "#6bbcff" },
+    { L: "#ffb86b", R: "#9b6bff" },
+    { L: "#4cd97b", R: "#ff6b6b" }
+  ];
+  
+  const boxes = document.querySelectorAll(".barBox");
+  boxes.forEach((box, i) => {
+    const val = values[i];
+    const pair = colors[i];
+    const activeColor = (val >= 50) ? pair.L : pair.R;
+
+    const indicator = box.querySelector(".indicator");
+    indicator.style.left = val + "%";
+    indicator.style.borderColor = activeColor;
+    
+    box.querySelector(".colorFill.left").style.width = val + "%";
+    box.querySelector(".colorFill.right").style.width = (100 - val) + "%";
+    box.querySelector(".p-left").textContent = val + "%";
+    box.querySelector(".p-right").textContent = (100 - val) + "%";
+  });
+}, 100);
+}
+
+function copyResult() {
+  const text = `${name}さんの診断結果は【${type}】でした！\n#彼氏ができない原因診断`;
+  navigator.clipboard.writeText(text);
+  alert("結果をコピーしました！SNSに貼り付けてね！");
 }
 
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
